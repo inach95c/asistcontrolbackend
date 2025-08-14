@@ -1,7 +1,7 @@
 services:
   - type: web
-    name: asistcontrol-backend
-    env: java
-    buildCommand: ./mvnw clean install
-    startCommand: ./mvnw spring-boot:run
+    name: asistcontrol
+    env: docker
     rootDir: .
+    buildCommand: ./mvnw clean package
+    startCommand: java -jar target/asistcontrol.jar
