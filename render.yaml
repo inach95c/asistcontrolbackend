@@ -5,11 +5,11 @@ services:
     startCommand: java -jar target/asistcontrol.jar
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb_t36s
+        value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb
       - key: DB_USER
         value: asistenciadb_t36s_user
       - key: DB_PASSWORD
         value: qsNBPdgvfk7pCLZ7Gp2ykuITzTystxIE
-# Forzado para que Git detecte el cambio
+
 
 
