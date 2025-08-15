@@ -37,12 +37,12 @@ public class QrTokenController {
        // String url = "http://TU_DOMINIO/asistencia/registrar-por-token?token=" + token.getToken();
     //    String url = "http://192.168.1.100/asistencia/registrar-por-token?token=" + token.getToken();
 
-        String dominio = "https://asistcontrol.netlify.app"; // o tu dominio real iba 192.168.1.100
-        String url = dominio + "/asistencia/registrar-por-token?token=" + token.getToken();
-         /* String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+       /* * String dominio = "https://asistcontrol.netlify.app"; // o tu dominio real iba 192.168.1.100
+        String url = dominio + "/asistencia/registrar-por-token?token=" + token.getToken(); * */
+          String url = ServletUriComponentsBuilder.fromCurrentContextPath()
         	    .path("/asistencia/registrar-por-token")
         	    .queryParam("token", token.getToken())
-        	    .toUriString();*/
+        	    .toUriString();
 
 
 
@@ -59,11 +59,11 @@ public class QrTokenController {
         //String url = "http://TU_DOMINIO/asistencia/registrar-por-jwt?token=" + jwt;
          /* String url = "http://192.168.1.100/asistencia/registrar-por-jwt?token=" + jwt;*/
         
-        String url = "https://asistcontrol.netlify.app/asistencia/registrar-por-jwt?token=" + jwt;
-         /* String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+    /* *    String url = "https://asistcontrol.netlify.app/asistencia/registrar-por-jwt?token=" + jwt; * */
+          String url = ServletUriComponentsBuilder.fromCurrentContextPath()
         		    .path("/asistencia/registrar-por-jwt")
         		    .queryParam("token", jwt)
-        		    .toUriString();*/
+        		    .toUriString();
 
         
         byte[] qr = qrCodeService.generateQRCode(url, 250, 250);
@@ -78,11 +78,11 @@ public class QrTokenController {
         String jwt = tokenService.generarJwt("ENTRADA", username, Duration.ofMinutes(2));
         
         /*String url = "http://192.168.1.100/asistencia/registrar-por-jwt?token=" + jwt;*/
-        String url = "https://asistcontrol.netlify.app/asistencia/registrar-por-jwt?token=" + jwt;
-       /* String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+   /* *     String url = "https://asistcontrol.netlify.app/asistencia/registrar-por-jwt?token=" + jwt; * */
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
         	    .path("/asistencia/registrar-por-jwt")
         	    .queryParam("token", jwt)
-        	    .toUriString();*/
+        	    .toUriString();
 
         byte[] qr = qrCodeService.generateQRCode(url, 250, 250);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qr);
