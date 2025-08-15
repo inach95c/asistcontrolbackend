@@ -46,22 +46,24 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		
 		/******sqlite********/
 		  // Copiar el archivo .db desde resources a una ruta accesible
-	    Path targetPath = Paths.get("data/sistema_examenes.db");
-	    if (!Files.exists(targetPath)) {
-	        try (InputStream in = getClass().getResourceAsStream("/db/sistema_examenes.db")) {
-	            if (in == null) {
-	                System.err.println("No se encontró el archivo sistema_examenes.db en /db dentro de resources.");
-	                return;
-	            }
-	            Files.createDirectories(targetPath.getParent());
-	            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
-	            System.out.println("Base de datos copiada a: " + targetPath.toAbsolutePath());
-	        } catch (IOException e) {
-	            System.err.println("Error al copiar la base de datos: " + e.getMessage());
-	        }
-	    } else {
-	        System.out.println("Base de datos ya existe en: " + targetPath.toAbsolutePath());
-	    }
+		 Path targetPath = Paths.get("/opt/render/db/asistcontrol.db");
+
+		    if (!Files.exists(targetPath)) {
+		        try (InputStream in = getClass().getResourceAsStream("/db/sistema_examenes.db")) {
+		            if (in == null) {
+		                System.err.println("No se encontró el archivo sistema_examenes.db en /db dentro de resources.");
+		                return;
+		            }
+		            Files.createDirectories(targetPath.getParent());
+		            Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
+		            System.out.println("Base de datos copiada a: " + targetPath.toAbsolutePath());
+		        } catch (IOException e) {
+		            System.err.println("Error al copiar la base de datos: " + e.getMessage());
+		        }
+		    } else {
+		        System.out.println("Base de datos ya existe en: " + targetPath.toAbsolutePath());
+		    }
+		}
 		
 		/***********************************/
 		
