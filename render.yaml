@@ -3,7 +3,7 @@ services:
     name: asistcontrol
     env: java
     buildCommand: ./mvnw clean install
-    startCommand: java -jar target/asistcontrol.jar
+    startCommand: java -jar target/asiscontrol.jar
     envVars:
       - key: DB_URL
         value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb
