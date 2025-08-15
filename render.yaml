@@ -10,3 +10,5 @@ services:
         value: asistenciadb_t36s_user
       - key: DB_PASSWORD
         value: qsNBPdgvfk7pCLZ7Gp2ykuITzTystxIE
+# Actualizado para eliminar campo runtime
+
