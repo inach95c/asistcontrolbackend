@@ -1,6 +1,7 @@
 services:
   - type: web
     name: asistcontrol
+    runtime: java 
     region: oregon
     plan: free
     rootDir: .
