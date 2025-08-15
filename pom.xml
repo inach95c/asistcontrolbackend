@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.sistema.examen</groupId>
 	<artifactId>asiscontrol</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	
 	<name>sistema-examenes-backend</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -112,6 +112,9 @@
             <filtering>false</filtering>
         </resource>
     </resources>
+    
+    <finalName>asiscontrol</finalName>
+    
     <plugins>
         <!-- Plugin para compilar y ejecutar Spring Boot -->
         <plugin>
