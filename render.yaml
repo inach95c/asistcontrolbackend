@@ -6,7 +6,7 @@ services:
     plan: free
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb
+        value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb_t36s
       - key: DB_USER
         value: asistenciadb_t36s_user
       - key: DB_PASSWORD
