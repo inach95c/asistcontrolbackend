@@ -1,6 +1,7 @@
 services:
   - type: web
     name: asistcontrol
+    env: java
     buildCommand: ./mvnw clean install
     startCommand: java -jar target/asistcontrol.jar
     envVars:
@@ -10,6 +11,5 @@ services:
         value: asistenciadb_t36s_user
       - key: DB_PASSWORD
         value: qsNBPdgvfk7pCLZ7Gp2ykuITzTystxIE
-
 
 
