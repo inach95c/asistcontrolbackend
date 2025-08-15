@@ -1,7 +1,6 @@
 services:
   - type: web
     name: asistcontrol
-    runtime: java
     buildCommand: ./mvnw clean install
     startCommand: java -jar target/asistcontrol.jar
     envVars:
