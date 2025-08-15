@@ -1,7 +1,9 @@
 services:
   - type: web
     name: asistcontrol
-    env: docker
+    env: java
     rootDir: .
     buildCommand: ./mvnw clean package
     startCommand: java -jar target/asistcontrol.jar
+
+
