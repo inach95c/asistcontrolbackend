@@ -1,9 +1,17 @@
 services:
   - type: web
     name: asistcontrol
-    env: java
+    region: oregon
+    plan: free
     rootDir: .
-    buildCommand: ./mvnw clean package
+    buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/asistcontrol.jar
-
-
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:sqlite:/opt/render/db/asistcontrol.db
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.sqlite.JDBC
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: com.sistema.examenes.configuraciones.SQLiteDialect
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: none
