@@ -1,8 +1,9 @@
 services:
   - type: web
     name: asistcontrol
-    buildCommand: ./mvnw clean install
-    startCommand: java -jar target/asiscontrol.jar
+    runtime: docker
+    region: oregon
+    plan: free
     envVars:
       - key: DB_URL
         value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb
