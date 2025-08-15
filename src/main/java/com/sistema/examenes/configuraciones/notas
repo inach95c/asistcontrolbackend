@@ -3,13 +3,13 @@
 
 se cambia las url en:
 
-HorarioController  no vi url
+HorarioController       // no vi url
 QrCodeController
 QrTokenController
 MySecurityConfig
 
 
-application.properties
+application.properties  // se hicieron cambios
 
 -------------------------------------------------*/
 
