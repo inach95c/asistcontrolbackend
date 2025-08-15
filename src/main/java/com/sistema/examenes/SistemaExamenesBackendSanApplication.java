@@ -97,11 +97,11 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 //    /*
 		Usuario usuario = new Usuario();
 		
-		usuario.setNombre("admin");
-		usuario.setApellido("admin");
-		usuario.setUsername("admin");
-		usuario.setPassword(bCryptPasswordEncoder.encode("543321"));
-		usuario.setEmail("inach95c@gmail.com");
+		usuario.setNombre("admin1");
+		usuario.setApellido("admin1");
+		usuario.setUsername("admin1");
+		usuario.setPassword(bCryptPasswordEncoder.encode("admin1"));
+		usuario.setEmail("admin1c@gmail.com");
 		usuario.setTelefono("59888006");
 		usuario.setPerfil("foto.pnp");
 		
