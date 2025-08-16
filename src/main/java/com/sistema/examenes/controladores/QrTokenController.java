@@ -37,12 +37,12 @@ public class QrTokenController {
        // String url = "http://TU_DOMINIO/asistencia/registrar-por-token?token=" + token.getToken();
     //    String url = "http://192.168.1.100/asistencia/registrar-por-token?token=" + token.getToken();
 
-       /* * String dominio = "https://asistcontrol.netlify.app"; // o tu dominio real iba 192.168.1.100
-        String url = dominio + "/asistencia/registrar-por-token?token=" + token.getToken(); * */
-          String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+       String dominio = "https://asistcontrol.netlify.app"; // o tu dominio real iba 192.168.1.100
+        String url = dominio + "/asistencia/registrar-por-token?token=" + token.getToken();
+        /* * String url = ServletUriComponentsBuilder.fromCurrentContextPath()
         	    .path("/asistencia/registrar-por-token")
-        	    .queryParam("token", token.getToken())
-        	    .toUriString();
+        	    .queryParam("token", token.getToken())                // estas lineas sustituyen las de arriba si no quiero dir estatica
+        	    .toUriString(); * */
 
 
 
