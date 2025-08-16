@@ -94,7 +94,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		}
 	*/	
 		
-//    /*
+    /*
 		Usuario usuario = new Usuario();
 		
 		usuario.setNombre("admin2");
@@ -118,7 +118,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		
 		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
 		System.out.println(usuarioGuardado.getUsername()); 
-//	*/	
+	*/	
 	}
 
 }
