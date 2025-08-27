@@ -65,14 +65,15 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		
 		**********************************/
 		
-	/*	try {
+	 /*
+		try {
 			Usuario usuario = new Usuario();
 			
-			usuario.setNombre("santodgc");
+			usuario.setNombre("administrador");
 			usuario.setApellido("Girandy");
-			usuario.setUsername("santodgc");
-			usuario.setPassword(bCryptPasswordEncoder.encode("543321.asd"));
-			usuario.setEmail("santos.columbie@etecsa.cu");
+			usuario.setUsername("administrador");
+			usuario.setPassword(bCryptPasswordEncoder.encode("5433210"));
+			usuario.setEmail("santodgc@gmail.com");
 			usuario.setTelefono("59888006");
 			usuario.setPerfil("foto.pnp");
 			
@@ -92,7 +93,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		}catch(UsuarioFoundException exception) {
 			exception.printStackTrace();
 		}
-	*/	
+	 */	
 		
     /*
 		Usuario usuario = new Usuario();
