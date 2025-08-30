@@ -23,12 +23,17 @@ import com.sistema.examenes.entidades.UsuarioRol;
 import com.sistema.examenes.excepciones.UsuarioFoundException;
 import com.sistema.examenes.servicios.UsuarioService;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 @SpringBootApplication
 //@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableScheduling     // agregada para eliminar los token del Qr
 
 
 public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	
 	@Autowired
 	private UsuarioService usuarioService;
@@ -120,6 +125,48 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
 		System.out.println(usuarioGuardado.getUsername()); 
 	*/	
-	}
+	
+		// para crear el usuario ID1 es necesario para la tolerancia
+		
+				try {
+		            // Verifica si el usuario con ID 1 ya existe
+		            Long count = jdbcTemplate.queryForObject(
+		                "SELECT COUNT(*) FROM usuarios WHERE id = ?", Long.class, 1L);
+
+		            if (count == 0) {
+		                // Insertar usuario con ID 1
+		                String sqlUsuario = "INSERT INTO usuarios (id, username, password, nombre, apellido, email, telefono, perfil, enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		                jdbcTemplate.update(sqlUsuario,
+		                    1L,
+		                    "admin",
+		                    bCryptPasswordEncoder.encode("s3cret.543321"),
+		                    "Administrador",
+		                    "Sistema",
+		                    "admin@sistema.com",
+		                    "00000000",
+		                    "admin.png",
+		                    true
+		                );
+
+		                // Insertar rol ADMIN si no existe
+		                String sqlRol = "INSERT INTO roles (rol_id, nombre) VALUES (?, ?) ON CONFLICT DO NOTHING";
+		                jdbcTemplate.update(sqlRol, 1L, "ADMIN");
+
+		                // Vincular usuario con rol ADMIN
+		                String sqlUsuarioRol = "INSERT INTO usuario_roles (usuario_id, rol_id) VALUES (?, ?)";
+		                jdbcTemplate.update(sqlUsuarioRol, 1L, 1L);
+
+		                System.out.println("✅ Usuario administrador con ID 1 creado correctamente.");
+		            } else {
+		                System.out.println("ℹ️ El usuario con ID 1 ya existe.");
+		            }
+		        } catch (Exception e) {
+		            System.out.println("❌ Error al crear el usuario con ID 1:");
+		            e.printStackTrace();
+		        }
+		    
+		
+		
+	}// fin run
 
 }

@@ -62,14 +62,29 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 
-	@Override
+	/*@Override
     public void eliminarUsuario(Long id) {
         if (usuarioRepository.existsById(id)) {
             usuarioRepository.deleteById(id);
         } else {
             throw new RuntimeException("Usuario no encontrado con ID: " + id);
         }
-    }
+    }*/
+	
+	@Override
+	public void eliminarUsuario(Long id) {
+	    if (id == 1L) {
+	        throw new RuntimeException("⚠️ No está permitido eliminar el usuario administrador con ID 1.");
+	    }
+
+	    if (usuarioRepository.existsById(id)) {
+	        usuarioRepository.deleteById(id);
+	    } else {
+	        throw new RuntimeException("Usuario no encontrado con ID: " + id);
+	    }
+	}
+
+	
 	
 	@Override
     public List<Usuario> obtenerTodosLosUsuarios() {
