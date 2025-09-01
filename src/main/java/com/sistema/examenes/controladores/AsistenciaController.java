@@ -119,7 +119,7 @@ import org.springframework.stereotype.Repository;
 @RestController
 @RequestMapping("/asistencia")
 //@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")                  //ORIGINAL
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") 
 //@CrossOrigin("*")
 public class AsistenciaController {
 

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/horarios")
-@CrossOrigin("*")
+@CrossOrigin("*")  
 //@CrossOrigin(origins = "http://localhost:4200")
 
 public class HorarioController {
