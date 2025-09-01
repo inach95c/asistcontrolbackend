@@ -62,6 +62,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf()
                 .disable()
+                .cors().and() // 👈 activamos CORS sin pasarle el source aquí   agregado para CRM
                 .cors()
                 .disable()
                 .authorizeRequests()
