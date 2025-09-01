@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contactos")
-@CrossOrigin(origins = "*") // Puedes ajustar esto según tu frontend
+@CrossOrigin(origins = "https://asistcontrol.netlify.app")
 public class ContactoController {
 
     @Autowired
