@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/contactos")
-@CrossOrigin(origins = "https://asistcontrol.netlify.app")
+//@CrossOrigin(origins = "https://asistcontrol.netlify.app")
 public class ContactoController {
 
     @Autowired
