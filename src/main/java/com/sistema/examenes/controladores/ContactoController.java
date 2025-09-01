@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/api/contactos")
+@RequestMapping("/contactos")
 //@CrossOrigin(origins = "https://asistcontrol.netlify.app")
 public class ContactoController {
 

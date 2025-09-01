@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/invitaciones")
+@RequestMapping("/invitaciones")
 @CrossOrigin(origins = "*")
 public class InvitacionController {
 

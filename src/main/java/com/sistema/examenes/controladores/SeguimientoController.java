@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/seguimiento")
+@RequestMapping("/seguimiento")
 @CrossOrigin(origins = "*")
 public class SeguimientoController {
 
