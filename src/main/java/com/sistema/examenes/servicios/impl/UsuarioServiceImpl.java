@@ -84,20 +84,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 	    }
 	}
 */
-	
+	// Método eliminarUsuario con protección para ID = 1, "adm" y "admin1"
 	@Override
 	public void eliminarUsuario(Long id) {
 	    // Verificar si el usuario existe
 	    Usuario usuario = usuarioRepository.findById(id)
 	        .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
+	    // Lista de usernames protegidos
+	    List<String> usuariosProtegidos = List.of("adm", "admin1");
+
 	    // Protección por ID y por username
-	    if (id == 1L || "adm".equalsIgnoreCase(usuario.getUsername())) {
+	    if (id == 1L || usuariosProtegidos.contains(usuario.getUsername().toLowerCase())) {
 	        throw new RuntimeException("⚠️ No está permitido eliminar el usuario protegido: " + usuario.getUsername());
 	    }
 
 	    usuarioRepository.deleteById(id);
 	}
+
 
 	
 	@Override
