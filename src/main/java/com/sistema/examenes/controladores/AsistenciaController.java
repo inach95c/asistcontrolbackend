@@ -273,9 +273,12 @@ public class AsistenciaController {
     
     
  // PARA GENERAR TOKEN, EL USUARIO SOLO SCANERARÁ SIN NECESIDAD DE AUTENTICARSE SOLUCION (2)
-    @GetMapping("/registrar-por-jwt")
-    public ResponseEntity<String> registrarPorJwt(@RequestParam String token) {
+    @PostMapping("/registrar-por-jwt")
+    public ResponseEntity<String> registrarPorJwt(@RequestBody Map<String, String> payload) {
         try {
+            String token = payload.get("token");
+            String fechaHoraStr = payload.get("fechaHora");
+
             Claims claims = Jwts.parser()
                 .setSigningKey("super-clave-secreta-para-qr")
                 .parseClaimsJws(token)
@@ -285,13 +288,17 @@ public class AsistenciaController {
             String tipoEvento = claims.get("tipoEvento", String.class);
 
             Usuario usuario = usuarioService.obtenerUsuario(username);
-            asistenciaService.registrarEvento(tipoEvento, usuario);
+            OffsetDateTime fechaHora = OffsetDateTime.parse(fechaHoraStr);
+
+            asistenciaService.registrarEvento(tipoEvento, usuario, fechaHora);
 
             return ResponseEntity.ok("Registro automático exitoso: " + tipoEvento + " para " + username);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Token inválido o expirado.");
+            return ResponseEntity.badRequest().body("Token inválido o error en el formato de fecha.");
         }
     }
+
+
     
     // PARA GENERAR TOKEN, EL USUARIO SOLO SCANERARÁ SIN NECESIDAD DE AUTENTICARSE SOLUCION, para validar toker personal (3) 
     @GetMapping("/asistencia/registrar-por-jwt")

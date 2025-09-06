@@ -400,10 +400,13 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         return totalMinutos / 60.0;
     }
 
+	
     @Override
     public void registrarEvento(String tipo, Usuario usuario) {
-        OffsetDateTime ahora = OffsetDateTime.now(ZoneOffset.UTC);
-        registrarEvento(tipo, usuario, ahora); // Delegamos en el método principal
+        registrarEvento(tipo, usuario, OffsetDateTime.now(ZoneOffset.UTC));
     }
+
+
+    
 
 }
