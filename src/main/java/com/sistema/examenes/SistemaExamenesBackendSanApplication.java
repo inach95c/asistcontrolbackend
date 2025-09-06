@@ -125,8 +125,33 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
 		System.out.println(usuarioGuardado.getUsername()); 
 	*/	
+		////////////////////////////////////////////////////////////////////////
+        /*Usuario usuario = new Usuario();
+		
+		usuario.setNombre("adm");
+		usuario.setApellido("admin");
+		usuario.setUsername("adm");
+		usuario.setPassword(bCryptPasswordEncoder.encode("adm.543321.s3cret"));
+		usuario.setEmail("adm@gmail.com");
+		usuario.setTelefono("59888006");
+		usuario.setPerfil("foto.pnp");
+		
+		
+		Rol rol = new Rol();
+		rol.setRolId(1L);
+		rol.setNombre("ADMIN");
+		
+		Set<UsuarioRol> usuarioRoles = new HashSet<>();
+		UsuarioRol usuarioRol = new UsuarioRol();  
+		usuarioRol.setRol(rol);
+		usuarioRol.setUsuario(usuario);
+		usuarioRoles.add(usuarioRol);
+		
+		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
+		System.out.println(usuarioGuardado.getUsername()); */
+		///////////////////////////////////////////////////////////////////////
 	
-		// para crear el usuario ID1 es necesario para la tolerancia
+		// para crear el usuario ID1 es necesario para la tolerancia no se borra no se accede
 		
 				try {
 		            // Verifica si el usuario con ID 1 ya existe
