@@ -57,7 +57,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(this.userDetailsService).passwordEncoder(passwordEncoder());
     }
 
-    @Override
+  /*  @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf()
@@ -82,7 +82,28 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         
 
         //http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    }*/
+    
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .cors().configurationSource(corsConfigurationSource()) // 👈 Aquí lo enlazas explícitamente
+            .and()
+            .authorizeRequests()
+                .antMatchers("/ping").permitAll()
+                .antMatchers("/generate-token", "/usuarios/").permitAll()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
+                .anyRequest().authenticated()
+            .and()
+            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
+
     
     
     

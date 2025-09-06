@@ -70,7 +70,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		
 		**********************************/
 		
-	// /*
+	 /*
 		try {
 			Usuario usuario = new Usuario();
 			
@@ -98,7 +98,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		}catch(UsuarioFoundException exception) {
 			exception.printStackTrace();
 		}
-	// */	
+	 */	
 		
     /*
 		Usuario usuario = new Usuario();
@@ -126,7 +126,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		System.out.println(usuarioGuardado.getUsername()); 
 	*/	
 		////////////////////////////////////////////////////////////////////////
-        Usuario usuario = new Usuario();
+     /*   Usuario usuario = new Usuario();
 		
 		usuario.setNombre("adm");
 		usuario.setApellido("admin");
@@ -148,7 +148,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		usuarioRoles.add(usuarioRol);
 		
 		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
-		System.out.println(usuarioGuardado.getUsername()); 
+		System.out.println(usuarioGuardado.getUsername()); */
 		///////////////////////////////////////////////////////////////////////
 	
 		// para crear el usuario ID1 es necesario para la tolerancia no se borra no se accede
