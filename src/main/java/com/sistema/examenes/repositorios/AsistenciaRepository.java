@@ -28,6 +28,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
@@ -40,7 +41,17 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
     	       "ORDER BY a.fechaHora DESC")
     	List<Asistencia> buscarPorNombreYFecha(@Param("nombre") String nombre, @Param("fecha") String fecha);
     
+   
     
-    List<Asistencia> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
+   // List<Asistencia> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin);
+    
+    // Y si usas filtros por fecha:  esto es nuevo lo inclui con los arreglos de la fecha
+    @Query("SELECT a FROM Asistencia a WHERE " +
+    	       "(:inicio IS NULL OR a.fechaHora >= :inicio) AND " +
+    	       "(:fin IS NULL OR a.fechaHora < :fin)")
+    	List<Asistencia> buscarPorRango(@Param("inicio") OffsetDateTime inicio, @Param("fin") OffsetDateTime fin);
+
+    
+    List<Asistencia> findByFechaHoraBetween(LocalDateTime localDateTime, LocalDateTime localDateTime2);
 
 }

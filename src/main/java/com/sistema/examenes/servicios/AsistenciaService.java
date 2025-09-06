@@ -23,6 +23,7 @@ import com.sistema.examenes.dto.AsistenciaDTO;
 import com.sistema.examenes.entidades.Asistencia;
 import com.sistema.examenes.entidades.Usuario;
 
+import java.time.OffsetDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -53,10 +54,14 @@ public interface AsistenciaService {
 
 
     double calcularHorasTrabajadasPorMes(String username, YearMonth mes);
+   
+    
+    void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora);
 
-
-
+    
 }
+
+
 
 
 

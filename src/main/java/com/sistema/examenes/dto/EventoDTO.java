@@ -1,5 +1,7 @@
 package com.sistema.examenes.dto;
 
+import java.time.OffsetDateTime;
+
 public class EventoDTO {
     private String username;
     private String tipo; // ENTRADA o SALIDA
@@ -26,4 +28,10 @@ public class EventoDTO {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
+   // esto se me agrego luefo de estar corrigiendo la hora internacionel
+	public OffsetDateTime getFechaHora() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

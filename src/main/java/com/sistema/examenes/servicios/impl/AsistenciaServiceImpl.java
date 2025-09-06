@@ -141,71 +141,57 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Autowired
     private AsistenciaRepository asistenciaRepository;
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private HorarioRepository horarioRepository; // si vas a validar turnos asignados
-    
+    private HorarioRepository horarioRepository;
+
     @Autowired
     private QrTokenRepository qrTokenRepository;
-    
+
     @Autowired
     private UsuarioService usuarioService;
 
-    
-    
- 
-
-
     @Override
-    public void registrarEvento(String tipo, Usuario usuario) {
-        LocalDateTime ahora = LocalDateTime.now();
-        LocalDate hoy = ahora.toLocalDate();
-        LocalTime horaActual = ahora.toLocalTime();
+    public void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora) {
+        LocalDate hoy = fechaHora.toLocalDate();
+        LocalTime horaActual = fechaHora.toLocalTime();
 
-        // 🕒 Verificar si el usuario tiene horarios activos
         List<Horario> turnos = horarioRepository.obtenerHorariosActivosParaFechaAsistencia(usuario, hoy);
-
         if (turnos.isEmpty()) {
             throw new IllegalStateException("No tienes un horario asignado para el día de hoy.");
         }
 
-        // ⚠️ Detectar si la ENTRADA fue fuera de tolerancia (+10 minutos)
-        boolean esTardia = false;
-        if ("ENTRADA".equalsIgnoreCase(tipo)) {
-            esTardia = turnos.stream().anyMatch(h ->
-                horaActual.isAfter(h.getHoraEntrada().plusMinutes(10))
-            );
-            // No se bloquea el registro, solo se marca como tardía
-        }
+        boolean esTardia = "ENTRADA".equalsIgnoreCase(tipo) &&
+            turnos.stream().anyMatch(h -> horaActual.isAfter(h.getHoraEntrada().plusMinutes(10)));
 
-        // 📜 Obtener historial de hoy
         List<Asistencia> historial = asistenciaRepository.findByUsuarioOrderByFechaHoraDesc(usuario);
         Asistencia ultimoEventoHoy = historial.stream()
             .filter(a -> a.getFechaHora().toLocalDate().equals(hoy))
             .findFirst()
             .orElse(null);
 
-        // ❌ Evitar eventos consecutivos iguales
         if (ultimoEventoHoy != null && tipo.equalsIgnoreCase(ultimoEventoHoy.getTipo())) {
             throw new IllegalStateException("Ya existe una " + tipo + " registrada previamente. No puede repetir el evento.");
         }
 
-        // 🛡️ Validar SALIDA sin ENTRADA previa
         boolean tieneEntrada = historial.stream().anyMatch(a ->
             "ENTRADA".equalsIgnoreCase(a.getTipo()) &&
             a.getFechaHora().toLocalDate().equals(hoy)
@@ -215,29 +201,26 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             throw new IllegalStateException("No se puede registrar SALIDA sin una ENTRADA previa.");
         }
 
-        // ✅ Crear y guardar el evento
         Asistencia asistencia = new Asistencia();
-        asistencia.setFechaHora(ahora);
+        asistencia.setFechaHora(fechaHora);
         asistencia.setTipo(tipo.toUpperCase());
         asistencia.setUsuario(usuario);
-        asistencia.setEstado(esTardia ? "TARDÍA" : "NORMAL"); // ← nuevo campo para visualización
+        asistencia.setEstado(esTardia ? "TARDÍA" : "NORMAL");
 
         asistenciaRepository.save(asistencia);
     }
-
-
 
     @Override
     public List<Asistencia> obtenerHistorial(Usuario usuario) {
         return asistenciaRepository.findByUsuarioOrderByFechaHoraDesc(usuario);
     }
-    
-    //admin
+
     @Override
     public List<Asistencia> obtenerTodas() {
         return asistenciaRepository.findAll();
     }
 
+    @Override
     public List<Asistencia> filtrarAsistencias(String nombre, String fecha) {
         if ((nombre == null || nombre.trim().isEmpty()) && (fecha == null || fecha.trim().isEmpty())) {
             return obtenerTodas();
@@ -247,7 +230,7 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             (fecha == null || fecha.isBlank()) ? null : fecha
         );
     }
-    
+
     @Override
     public void actualizarAsistencia(Long id, AsistenciaDTO dto) {
         Asistencia asistencia = asistenciaRepository.findById(id)
@@ -258,7 +241,7 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
         asistenciaRepository.save(asistencia);
     }
-    
+
     @Override
     public void eliminarAsistencia(Long id) {
         if (!asistenciaRepository.existsById(id)) {
@@ -267,31 +250,24 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         asistenciaRepository.deleteById(id);
     }
 
-    
-    //QR
     @Override
     public boolean registrarDesdeQr(String username, String tipoEvento) {
-        // Validar que los parámetros estén presentes
         if (username == null || tipoEvento == null) return false;
 
-        // Buscar el usuario
         Usuario usuario = usuarioRepository.findByUsername(username);
         if (usuario == null) return false;
 
-        LocalDateTime ahora = LocalDateTime.now();
+        OffsetDateTime ahora = OffsetDateTime.now(ZoneOffset.UTC);
 
-        // Buscar historial reciente del usuario
         List<Asistencia> historial = asistenciaRepository.findByUsuarioOrderByFechaHoraDesc(usuario);
         Asistencia ultima = historial.stream().findFirst().orElse(null);
 
-        // Evitar duplicado del mismo tipo en el mismo día
         boolean yaRegistradoHoy = historial.stream().anyMatch(a ->
             tipoEvento.equalsIgnoreCase(a.getTipo()) &&
             a.getFechaHora().toLocalDate().equals(ahora.toLocalDate())
         );
         if (yaRegistradoHoy) return false;
 
-        // Validación adicional para tipo SALIDA sin ENTRADA previa (opcional)
         if (tipoEvento.equalsIgnoreCase("SALIDA")) {
             boolean tieneEntradaPrevia = historial.stream().anyMatch(a ->
                 a.getTipo().equalsIgnoreCase("ENTRADA") &&
@@ -300,19 +276,15 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             if (!tieneEntradaPrevia) return false;
         }
 
-       
-
-        // Registrar asistencia
         Asistencia asistencia = new Asistencia();
         asistencia.setFechaHora(ahora);
         asistencia.setTipo(tipoEvento.toUpperCase());
         asistencia.setUsuario(usuario);
         asistencia.setOrigen("kiosk");
+
         asistenciaRepository.save(asistencia);
         return true;
     }
-    
-    
 
     @Override
     public boolean registrarEventoGenerico(String username, String tipoEvento) {
@@ -321,9 +293,8 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         Usuario usuario = usuarioRepository.findByUsername(username);
         if (usuario == null) return false;
 
-        LocalDateTime ahora = LocalDateTime.now();
+        OffsetDateTime ahora = OffsetDateTime.now(ZoneOffset.UTC);
 
-        // Evitar duplicado por tipo en el mismo día
         List<Asistencia> historial = asistenciaRepository.findByUsuarioOrderByFechaHoraDesc(usuario);
         boolean yaRegistradoHoy = historial.stream().anyMatch(a ->
             tipoEvento.equalsIgnoreCase(a.getTipo()) &&
@@ -331,7 +302,6 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         );
         if (yaRegistradoHoy) return false;
 
-        // Reglas adicionales para SALIDA
         if (tipoEvento.equalsIgnoreCase("SALIDA")) {
             boolean tieneEntrada = historial.stream().anyMatch(a ->
                 a.getTipo().equalsIgnoreCase("ENTRADA") &&
@@ -340,74 +310,54 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             if (!tieneEntrada) return false;
         }
 
-        // Registro del evento
         Asistencia asistencia = new Asistencia();
         asistencia.setUsuario(usuario);
         asistencia.setTipo(tipoEvento.toUpperCase());
         asistencia.setFechaHora(ahora);
+        asistencia.setOrigen("generico");
 
         asistenciaRepository.save(asistencia);
         return true;
     }
 
-    
-    
     @Override
     public boolean validarTokenQr(String token) {
         Optional<QrToken> tokenEncontrado = qrTokenRepository.findByToken(token);
-
-        if (tokenEncontrado.isPresent()) {
-            QrToken qr = tokenEncontrado.get();
-            return qr.estaVigente();
-        }
-
-        return false;
+        return tokenEncontrado.map(QrToken::estaVigente).orElse(false);
     }
-    
-    
-    
+
     @Override
     public String registrarDesdeTokenQr(String token) {
         Optional<QrToken> tokenEncontrado = qrTokenRepository.findByToken(token);
-
-        if (tokenEncontrado.isEmpty()) {
-            return "QR no encontrado.";
-        }
+        if (tokenEncontrado.isEmpty()) return "QR no encontrado.";
 
         QrToken qr = tokenEncontrado.get();
-
-        if (!qr.estaVigente()) {
-            return "QR expirado o ya usado.";
-        }
+        if (!qr.estaVigente()) return "QR expirado o ya usado.";
 
         String username = qr.getToken().split("-")[0];
         Usuario usuario = usuarioService.obtenerUsuario(username);
+        if (usuario == null) return "Usuario no encontrado para este QR.";
 
-        if (usuario == null) {
-            return "Usuario no encontrado para este QR.";
-        }
+        OffsetDateTime ahora = OffsetDateTime.now(ZoneOffset.UTC);
 
-        // Registra asistencia
         Asistencia asistencia = new Asistencia();
         asistencia.setTipo(qr.getTipoEvento());
         asistencia.setUsuario(usuario);
-        asistencia.setFechaHora(LocalDateTime.now());
+        asistencia.setFechaHora(ahora);
+        asistencia.setOrigen("qr");
+
         asistenciaRepository.save(asistencia);
 
-        // Marca token como usado
         qr.setUsado(true);
         qrTokenRepository.save(qr);
 
         return "QR registrado con éxito para " + username + " (" + qr.getTipoEvento().toUpperCase() + ")";
     }
 
-    
     @Override
     public double calcularHorasTrabajadasPorMes(String username, YearMonth mes) {
         Usuario usuario = usuarioRepository.findByUsername(username);
-        if (usuario == null) {
-            throw new IllegalArgumentException("Usuario no encontrado: " + username);
-        }
+        if (usuario == null) throw new IllegalArgumentException("Usuario no encontrado: " + username);
 
         LocalDate inicio = mes.atDay(1);
         LocalDate fin = mes.atEndOfMonth();
@@ -430,13 +380,13 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         for (Map.Entry<LocalDate, List<Asistencia>> entry : porDia.entrySet()) {
             List<Asistencia> eventos = entry.getValue();
 
-            LocalDateTime entrada = eventos.stream()
+            OffsetDateTime entrada = eventos.stream()
                 .filter(e -> "ENTRADA".equalsIgnoreCase(e.getTipo()))
                 .map(Asistencia::getFechaHora)
                 .findFirst()
                 .orElse(null);
 
-            LocalDateTime salida = eventos.stream()
+            OffsetDateTime salida = eventos.stream()
                 .filter(e -> "SALIDA".equalsIgnoreCase(e.getTipo()))
                 .map(Asistencia::getFechaHora)
                 .reduce((first, second) -> second)
@@ -447,10 +397,13 @@ public class AsistenciaServiceImpl implements AsistenciaService {
             }
         }
 
-        return totalMinutos / 60.0; // Devuelve horas con decimales
+        return totalMinutos / 60.0;
     }
 
- 
+    @Override
+    public void registrarEvento(String tipo, Usuario usuario) {
+        OffsetDateTime ahora = OffsetDateTime.now(ZoneOffset.UTC);
+        registrarEvento(tipo, usuario, ahora); // Delegamos en el método principal
+    }
 
 }
-

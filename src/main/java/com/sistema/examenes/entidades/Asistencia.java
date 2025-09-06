@@ -89,6 +89,7 @@ package com.sistema.examenes.entidades;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "asistencias")
@@ -98,7 +99,9 @@ public class Asistencia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime fechaHora;
+   // private LocalDateTime fechaHora;
+    
+    private OffsetDateTime fechaHora; // ← antes era LocalDateTime
 
     private String tipo; // "ENTRADA" o "SALIDA"
 
@@ -121,7 +124,7 @@ public class Asistencia {
 
     public Asistencia() {}
 
-    public Asistencia(LocalDateTime fechaHora, String tipo, Usuario usuario) {
+    public Asistencia(OffsetDateTime fechaHora, String tipo, Usuario usuario) {
         this.fechaHora = fechaHora;
         this.tipo = tipo;
         this.usuario = usuario;
@@ -133,12 +136,12 @@ public class Asistencia {
         return id;
     }
 
-    public LocalDateTime getFechaHora() {
+    public OffsetDateTime getFechaHora() {
         return fechaHora;
     }
 
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
+    public void setFechaHora(OffsetDateTime localDateTime) {
+        this.fechaHora = localDateTime;
     }
 
     public String getTipo() {

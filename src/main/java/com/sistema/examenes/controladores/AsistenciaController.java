@@ -78,6 +78,7 @@ public class AsistenciaController {
 
 package com.sistema.examenes.controladores;
 
+
 import com.sistema.examenes.dto.AsistenciaDTO;
 import com.sistema.examenes.dto.EventoDTO;
 import com.sistema.examenes.entidades.Asistencia;
@@ -102,6 +103,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +125,9 @@ import org.springframework.stereotype.Repository;
 //@CrossOrigin("*")
 public class AsistenciaController {
 
-    @Autowired
+	 
+	
+	@Autowired
     private AsistenciaService asistenciaService;
 
     @Autowired
@@ -300,7 +304,7 @@ public class AsistenciaController {
 
  
     
-    @PostMapping("/registrar")
+    /*@PostMapping("/registrar")
     public ResponseEntity<Map<String, String>> registrarEvento(@RequestBody EventoDTO dto) {
         Map<String, String> respuesta = new HashMap<>();
 
@@ -323,6 +327,37 @@ public class AsistenciaController {
             }
 
             asistenciaService.registrarEvento(dto.getTipo(), usuario);
+            respuesta.put("mensaje", "Evento registrado exitosamente.");
+            return ResponseEntity.ok(respuesta);
+
+        } catch (IllegalStateException e) {
+            respuesta.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(respuesta);
+        }
+    }
+*/
+    
+    @PostMapping("/registrar")
+    public ResponseEntity<Map<String, String>> registrarEvento(@RequestBody EventoDTO dto) {
+        Map<String, String> respuesta = new HashMap<>();
+
+        try {
+            Usuario usuario = usuarioService.obtenerUsuario(dto.getUsername());
+            OffsetDateTime fechaHora = dto.getFechaHora();
+            LocalDate hoy = fechaHora.toLocalDate();
+            LocalTime horaActual = fechaHora.toLocalTime();
+
+            if ("ENTRADA".equalsIgnoreCase(dto.getTipo())) {
+                List<Horario> turnos = horarioRepository.obtenerHorariosActivosParaFechaAsistencia(usuario, hoy);
+                boolean entradaTardia = turnos.stream().anyMatch(h ->
+                    horaActual.isAfter(h.getHoraEntrada().plusMinutes(10))
+                );
+                if (entradaTardia) {
+                    respuesta.put("advertencia", "Registro fuera del margen de tolerancia (+10 minutos).");
+                }
+            }
+
+            asistenciaService.registrarEvento(dto.getTipo(), usuario, fechaHora);
             respuesta.put("mensaje", "Evento registrado exitosamente.");
             return ResponseEntity.ok(respuesta);
 
