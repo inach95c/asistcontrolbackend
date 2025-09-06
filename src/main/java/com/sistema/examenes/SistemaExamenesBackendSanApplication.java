@@ -70,7 +70,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		
 		**********************************/
 		
-	 /*
+	 
 		try {
 			Usuario usuario = new Usuario();
 			
@@ -98,7 +98,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		}catch(UsuarioFoundException exception) {
 			exception.printStackTrace();
 		}
-	 */	
+	 	
 		
     /*
 		Usuario usuario = new Usuario();
