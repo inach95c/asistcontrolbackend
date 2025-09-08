@@ -5,8 +5,15 @@ import com.sistema.examenes.entidades.Contacto;
 import com.sistema.examenes.servicios.AsistenciaService;
 import com.sistema.examenes.servicios.ContactoService;
 import com.sistema.examenes.servicios.QrTokenEventoService;
+import com.sistema.examenes.utilidades.JqrGenerator;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +32,10 @@ public class CheckinController {
     
     @Autowired
     private ContactoService contactoService;
+    
+    @Autowired
+    private JqrGenerator jqrGenerator;
+
 
     /**
      * Escaneo anónimo desde QR dinámico
@@ -83,6 +94,33 @@ public class CheckinController {
 
         return ResponseEntity.ok("✅ Asistencia registrada para " + nombre);
     }
+    
+    
+    @GetMapping("/evento/{eventoId}/qr")
+    public ResponseEntity<Map<String, String>> generarQrVisual(@PathVariable Long eventoId) {
+        try {
+            // 1. Generar token y URL
+            String token = qrTokenEventoService.generarTokenParaEvento(eventoId);
+            String contenidoQR = "https://asistcontrol.com/checkin?token=" + token + "&eventoId=" + eventoId;
+
+            // 2. Generar imagen QR
+            BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR); // ZXing o tu clase
+
+            // 3. Convertir a base64
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(qrImage, "png", baos);
+            String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+
+            // 4. Devolver como imagen embebida
+            Map<String, String> response = new HashMap<>();
+            response.put("url", "data:image/png;base64," + base64);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar el QR"));
+        }
+    }
+
 
     
 }

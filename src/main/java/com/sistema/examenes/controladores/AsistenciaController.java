@@ -90,8 +90,10 @@ import com.sistema.examenes.repositorios.AsistenciaRepository;
 import com.sistema.examenes.repositorios.HorarioRepository;
 import com.sistema.examenes.repositorios.UsuarioRepository;
 import com.sistema.examenes.servicios.AsistenciaService;
+import com.sistema.examenes.servicios.QrTokenEventoService;
 import com.sistema.examenes.servicios.QrTokenService;
 import com.sistema.examenes.servicios.UsuarioService;
+import com.sistema.examenes.utilidades.JqrGenerator;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -100,6 +102,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -113,11 +117,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -151,6 +158,14 @@ public class AsistenciaController {
     
     @Autowired
     private AsistenciaRepository asistenciaRepository;
+    
+    @Autowired
+    private JqrGenerator jqrGenerator;
+    
+    @Autowired
+    private QrTokenEventoService qrTokenEventoService;
+
+
 
 
 
@@ -476,7 +491,31 @@ public class AsistenciaController {
         return ResponseEntity.ok(resultado);
     }
  
-    
+    @GetMapping("/evento/{eventoId}/qr")
+    public ResponseEntity<Map<String, String>> generarQrParaEvento(@PathVariable Long eventoId) {
+        try {
+            // 1. Generar token y URL
+            String token = qrTokenEventoService.generarTokenParaEvento(eventoId);
+            String contenidoQR = "https://asistcontrol.com/checkin?token=" + token + "&eventoId=" + eventoId;
+
+            // 2. Generar imagen QR
+            BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR); // ZXing o tu clase
+
+            // 3. Convertir a base64
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(qrImage, "png", baos);
+            String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+
+            // 4. Devolver como imagen embebida
+            Map<String, String> response = new HashMap<>();
+            response.put("url", "data:image/png;base64," + base64);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar el QR"));
+        }
+    }
+
     
 }
 
