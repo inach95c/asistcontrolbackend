@@ -16,6 +16,8 @@ import javax.persistence.EntityNotFoundException;
 
 @Service
 public class ContactoServiceImpl implements ContactoService {
+	
+	
 
     @Autowired
     private ContactoRepository contactoRepository;
@@ -68,4 +70,24 @@ public class ContactoServiceImpl implements ContactoService {
     public List<Contacto> filtrarPorPreferencias(List<String> preferencias) {
         return contactoRepository.findByPreferenciasIn(preferencias);
     }
+    
+    
+
+    @Override
+    public Contacto crearSiNoExiste(String nombre, String correo) {
+        Optional<Contacto> existente = contactoRepository.findByNombreAndCorreo(nombre, correo);
+
+        if (existente.isPresent()) {
+            return existente.get();
+        }
+
+        Contacto nuevo = new Contacto();
+        nuevo.setNombre(nombre);
+        nuevo.setCorreo(correo);
+        // puedes agregar otros campos por defecto si lo deseas
+
+        return contactoRepository.save(nuevo);
+    }
+
+    
 }

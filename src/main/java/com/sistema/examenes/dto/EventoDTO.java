@@ -3,14 +3,37 @@ package com.sistema.examenes.dto;
 import java.time.OffsetDateTime;
 
 public class EventoDTO {
+
+    private Long eventoId;
+    private Long contactoId;
     private String username;
     private String tipo; // ENTRADA o SALIDA
+    private OffsetDateTime fechaHora;
 
     public EventoDTO() {}
 
-    public EventoDTO(String username, String tipo) {
+    public EventoDTO(Long eventoId, Long contactoId, String username, String tipo, OffsetDateTime fechaHora) {
+        this.eventoId = eventoId;
+        this.contactoId = contactoId;
         this.username = username;
         this.tipo = tipo;
+        this.fechaHora = fechaHora;
+    }
+
+    public Long getEventoId() {
+        return eventoId;
+    }
+
+    public void setEventoId(Long eventoId) {
+        this.eventoId = eventoId;
+    }
+
+    public Long getContactoId() {
+        return contactoId;
+    }
+
+    public void setContactoId(Long contactoId) {
+        this.contactoId = contactoId;
     }
 
     public String getUsername() {
@@ -29,9 +52,11 @@ public class EventoDTO {
         this.tipo = tipo;
     }
 
-   // esto se me agrego luefo de estar corrigiendo la hora internacionel
-	public OffsetDateTime getFechaHora() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public OffsetDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(OffsetDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
 }

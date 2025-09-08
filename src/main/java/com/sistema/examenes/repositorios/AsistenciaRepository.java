@@ -53,5 +53,28 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
 
     
     List<Asistencia> findByFechaHoraBetween(LocalDateTime localDateTime, LocalDateTime localDateTime2);
+    
+    //Esto te permite validar si un contacto ya escaneó para ese evento.
+    List<Asistencia> findByEventoIdAndContactoId(Long eventoId, Long contactoId);
+
+    //Si quieres trazabilidad del token QR usado:
+    List<Asistencia> findByTokenEscaneado(String tokenEscaneado);
+
+    //Esto te permite filtrar escaneos por QR_DINAMICO, QR_ESTATICO, etc.
+    List<Asistencia> findByCanal(String canal);
+
+    //Para mostrar en el panel quién ha escaneado recientemente:
+    List<Asistencia> findByEventoIdOrderByFechaHoraDesc(Long eventoId);
+    
+    List<Asistencia> findTop10ByEventoIdOrderByFechaHoraDesc(Long eventoId);
+    
+    List<Asistencia> findByEventoIdOrderByFechaHoraAsc(Long eventoId);
+
+    List<Asistencia> findByEventoId(Long eventoId);
+
+    boolean existsByEventoIdAndContactoId(Long eventoId, Long contactoId);
+
+
+    
 
 }

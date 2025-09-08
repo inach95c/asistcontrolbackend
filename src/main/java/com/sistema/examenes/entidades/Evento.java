@@ -19,6 +19,8 @@ public class Evento {
 
     private String ciudad;
 
+    private String zonaHoraria; // Ej: "America/Havana", "Europe/Madrid"
+
     private LocalDateTime fechaInicio;
 
     private LocalDateTime fechaFin;
@@ -47,10 +49,12 @@ public class Evento {
     public Evento() {}
 
     // Constructor útil
-    public Evento(String titulo, String descripcion, String ciudad, LocalDateTime fechaInicio, LocalDateTime fechaFin, TipoEvento tipo, List<String> temas) {
+    public Evento(String titulo, String descripcion, String ciudad, String zonaHoraria,
+                  LocalDateTime fechaInicio, LocalDateTime fechaFin, TipoEvento tipo, List<String> temas) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.ciudad = ciudad;
+        this.zonaHoraria = zonaHoraria;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.tipo = tipo;
@@ -87,6 +91,14 @@ public class Evento {
 
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
+    }
+
+    public String getZonaHoraria() {
+        return zonaHoraria;
+    }
+
+    public void setZonaHoraria(String zonaHoraria) {
+        this.zonaHoraria = zonaHoraria;
     }
 
     public LocalDateTime getFechaInicio() {

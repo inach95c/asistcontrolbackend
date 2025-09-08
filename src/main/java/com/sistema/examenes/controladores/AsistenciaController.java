@@ -86,6 +86,7 @@ import com.sistema.examenes.entidades.Horario;
 import com.sistema.examenes.entidades.QrToken;
 import com.sistema.examenes.entidades.RegistroRespuestaDTO;
 import com.sistema.examenes.entidades.Usuario;
+import com.sistema.examenes.repositorios.AsistenciaRepository;
 import com.sistema.examenes.repositorios.HorarioRepository;
 import com.sistema.examenes.repositorios.UsuarioRepository;
 import com.sistema.examenes.servicios.AsistenciaService;
@@ -110,12 +111,15 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
+import java.util.Comparator;
 
 
 @RestController
@@ -144,6 +148,10 @@ public class AsistenciaController {
     
     @Autowired
     private HorarioRepository horarioRepository;
+    
+    @Autowired
+    private AsistenciaRepository asistenciaRepository;
+
 
 
 
@@ -354,6 +362,12 @@ public class AsistenciaController {
             LocalDate hoy = fechaHora.toLocalDate();
             LocalTime horaActual = fechaHora.toLocalTime();
 
+            // Validación de duplicado si hay contactoId
+            if (dto.getContactoId() != null && asistenciaService.yaRegistrado(dto.getEventoId(), dto.getContactoId())) {
+                throw new IllegalStateException("Este contacto ya fue registrado en el evento.");
+            }
+
+            // Validación de entrada tardía
             if ("ENTRADA".equalsIgnoreCase(dto.getTipo())) {
                 List<Horario> turnos = horarioRepository.obtenerHorariosActivosParaFechaAsistencia(usuario, hoy);
                 boolean entradaTardia = turnos.stream().anyMatch(h ->
@@ -373,6 +387,7 @@ public class AsistenciaController {
             return ResponseEntity.badRequest().body(respuesta);
         }
     }
+
 
     
     @ExceptionHandler(IllegalStateException.class)
@@ -396,8 +411,72 @@ public class AsistenciaController {
         return ResponseEntity.ok(horas);
     }
 
+// crm
+    @GetMapping("/evento/{eventoId}/recientes")
+    public ResponseEntity<List<Map<String, Object>>> obtenerEscaneosRecientes(@PathVariable Long eventoId) {
+        List<Asistencia> asistencias = asistenciaRepository.findTop10ByEventoIdOrderByFechaHoraDesc(eventoId);
+
+        List<Map<String, Object>> resultado = asistencias.stream().map(a -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("nombre", a.getContacto() != null ? a.getContacto().getNombre() : null);
+            map.put("fechaHora", a.getFechaHora());
+            map.put("canal", a.getCanal());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
+    }
 
     
+    @GetMapping("/evento/{eventoId}/resumen")
+    public ResponseEntity<Map<String, Object>> obtenerResumen(@PathVariable Long eventoId) {
+        List<Asistencia> asistencias = asistenciaRepository.findByEventoId(eventoId);
 
+        Map<String, Long> porCanal = asistencias.stream()
+            .collect(Collectors.groupingBy(Asistencia::getCanal, Collectors.counting()));
+
+        asistencias.sort((a1, a2) -> a2.getFechaHora().compareTo(a1.getFechaHora())); // orden descendente
+
+        List<Map<String, Object>> ultimos = asistencias.stream()
+        	    .limit(10)
+        	    .map(a -> {
+        	        Map<String, Object> map = new HashMap<>();
+        	        map.put("nombre", a.getContacto() != null ? a.getContacto().getNombre() : null);
+        	        map.put("fechaHora", a.getFechaHora());
+        	        map.put("canal", a.getCanal());
+        	        return map;
+        	    })
+        	    .collect(Collectors.toList());
+
+
+
+        Map<String, Object> resumen = new HashMap<>();
+        resumen.put("nombreEvento", "Evento de prueba"); // puedes obtenerlo dinámicamente
+        resumen.put("total", asistencias.size());
+        resumen.put("porCanal", porCanal);
+        resumen.put("ultimos", ultimos);
+
+        return ResponseEntity.ok(resumen);
+    }
+
+
+
+    @GetMapping("/evento/{eventoId}/todos")
+    public ResponseEntity<List<Map<String, Object>>> obtenerTodosLosEscaneos(@PathVariable Long eventoId) {
+        List<Asistencia> asistencias = asistenciaRepository.findByEventoIdOrderByFechaHoraAsc(eventoId);
+
+        List<Map<String, Object>> resultado = asistencias.stream().map(a -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("nombre", a.getContacto() != null ? a.getContacto().getNombre() : null);
+            map.put("fechaHora", a.getFechaHora());
+            map.put("canal", a.getCanal());
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
+    }
+ 
+    
+    
 }
 

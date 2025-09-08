@@ -14,4 +14,8 @@ public interface ContactoService {
     List<Contacto> buscarPorNombre(String nombre);
     List<Contacto> buscarPorCiudad(String ciudad);
     List<Contacto> filtrarPorPreferencias(List<String> preferencias);
+    
+    //para qr crm
+    Contacto crearSiNoExiste(String nombre, String correo);
+
 }

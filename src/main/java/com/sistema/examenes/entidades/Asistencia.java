@@ -1,94 +1,6 @@
-
-/*
 package com.sistema.examenes.entidades;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "asistencias")
-public class Asistencia {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private LocalDateTime fechaHora;
-
-    private String tipo; // "ENTRADA" o "SALIDA"
-    
-    private String origen; // Ej: "kiosk", "web", "mobile"
-
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-
-    public Asistencia() {}
-
-    public Asistencia(LocalDateTime fechaHora, String tipo, Usuario usuario) {
-        this.fechaHora = fechaHora;
-        this.tipo = tipo;
-        this.usuario = usuario;
-    }
-    
-  
-
-	@Column(length = 20)
-    private String estado; // NORMAL o TARDÍA
-
-
-    // Getters y setters
-	
-	public String getEstado() { return estado; }
-	public void setEstado(String estado) { this.estado = estado; }
-
-	
-    public Long getId() {
-        return id;
-    }
-
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
-    }
-
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-	public String getOrigen() {
-		return origen;
-	}
-
-	public void setOrigen(String origen) {
-		this.origen = origen;
-	}
-   
-    
-} */
-
-
-
-package com.sistema.examenes.entidades;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -99,16 +11,20 @@ public class Asistencia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-   // private LocalDateTime fechaHora;
-    
-    private OffsetDateTime fechaHora; // ← antes era LocalDateTime
+    private OffsetDateTime fechaHora; // UTC
 
-    private String tipo; // "ENTRADA" o "SALIDA"
+    private String tipo; // "ENTRADA", "SALIDA", "CHECKIN"
 
-    private String origen; // Ej: "kiosk", "web", "mobile"
+    private String origen; // "web", "mobile", "kiosk", "qr"
 
     @Column(length = 20)
     private String estado; // "NORMAL", "TARDÍA", etc.
+
+    @Column(length = 20)
+    private String canal; // "QR_DINAMICO", "QR_ESTATICO", "WHATSAPP", "EMAIL", "MANUAL"
+
+    @Column(length = 100)
+    private String tokenEscaneado; // opcional, para trazabilidad
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -123,6 +39,8 @@ public class Asistencia {
     private Evento evento;
 
     public Asistencia() {}
+    
+    
 
     public Asistencia(OffsetDateTime fechaHora, String tipo, Usuario usuario) {
         this.fechaHora = fechaHora;
@@ -140,8 +58,8 @@ public class Asistencia {
         return fechaHora;
     }
 
-    public void setFechaHora(OffsetDateTime localDateTime) {
-        this.fechaHora = localDateTime;
+    public void setFechaHora(OffsetDateTime fechaHora) {
+        this.fechaHora = fechaHora;
     }
 
     public String getTipo() {
@@ -166,6 +84,22 @@ public class Asistencia {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getCanal() {
+        return canal;
+    }
+
+    public void setCanal(String canal) {
+        this.canal = canal;
+    }
+
+    public String getTokenEscaneado() {
+        return tokenEscaneado;
+    }
+
+    public void setTokenEscaneado(String tokenEscaneado) {
+        this.tokenEscaneado = tokenEscaneado;
     }
 
     public Usuario getUsuario() {
@@ -197,5 +131,9 @@ public class Asistencia {
         if (usuario != null) return "USUARIO";
         if (contacto != null) return "CONTACTO";
         return "DESCONOCIDO";
+    }
+
+    public boolean esEscaneoQr() {
+        return "QR_DINAMICO".equalsIgnoreCase(canal) || "QR_ESTATICO".equalsIgnoreCase(canal);
     }
 }

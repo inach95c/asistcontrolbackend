@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/eventos")
 @CrossOrigin(origins = "*")
-
 public class EventoController {
 
     @Autowired
@@ -60,5 +60,11 @@ public class EventoController {
     @GetMapping("/activos")
     public ResponseEntity<List<Evento>> listarActivos() {
         return ResponseEntity.ok(eventoService.listarActivos());
+    }
+
+    @GetMapping("/en-curso")
+    public ResponseEntity<List<Evento>> eventosEnCurso(@RequestParam String zonaHoraria) {
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.ok(eventoService.obtenerEventosEnCurso(zonaHoraria, now));
     }
 }

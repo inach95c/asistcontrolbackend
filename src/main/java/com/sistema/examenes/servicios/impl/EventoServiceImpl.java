@@ -7,11 +7,10 @@ import com.sistema.examenes.servicios.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-//import jakarta.persistence.EntityNotFoundException;
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import javax.persistence.EntityNotFoundException;
 
 @Service
 public class EventoServiceImpl implements EventoService {
@@ -30,6 +29,7 @@ public class EventoServiceImpl implements EventoService {
             e.setTitulo(eventoActualizado.getTitulo());
             e.setDescripcion(eventoActualizado.getDescripcion());
             e.setCiudad(eventoActualizado.getCiudad());
+            e.setZonaHoraria(eventoActualizado.getZonaHoraria());
             e.setFechaInicio(eventoActualizado.getFechaInicio());
             e.setFechaFin(eventoActualizado.getFechaFin());
             e.setTipo(eventoActualizado.getTipo());
@@ -68,5 +68,9 @@ public class EventoServiceImpl implements EventoService {
     public List<Evento> listarActivos() {
         return eventoRepository.findByActivoTrue();
     }
-}
 
+    @Override
+    public List<Evento> obtenerEventosEnCurso(String zonaHoraria, LocalDateTime now) {
+        return eventoRepository.findEventosEnCurso(zonaHoraria, now);
+    }
+}

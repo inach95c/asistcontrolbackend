@@ -124,14 +124,19 @@ package com.sistema.examenes.servicios.impl;
 
 import com.sistema.examenes.dto.AsistenciaDTO;
 import com.sistema.examenes.entidades.Asistencia;
+import com.sistema.examenes.entidades.Contacto;
+import com.sistema.examenes.entidades.Evento;
 import com.sistema.examenes.entidades.Horario;
 import com.sistema.examenes.entidades.QrToken;
 import com.sistema.examenes.entidades.Usuario;
 import com.sistema.examenes.repositorios.AsistenciaRepository;
+import com.sistema.examenes.repositorios.ContactoRepository;
+import com.sistema.examenes.repositorios.EventoRepository;
 import com.sistema.examenes.repositorios.HorarioRepository;
 import com.sistema.examenes.repositorios.QrTokenRepository;
 import com.sistema.examenes.repositorios.UsuarioRepository;
 import com.sistema.examenes.servicios.AsistenciaService;
+import com.sistema.examenes.servicios.QrTokenEventoService;
 import com.sistema.examenes.servicios.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,6 +173,16 @@ public class AsistenciaServiceImpl implements AsistenciaService {
 
     @Autowired
     private UsuarioService usuarioService;
+    
+    //crm
+    @Autowired
+    private EventoRepository eventoRepository;
+
+    @Autowired
+    private ContactoRepository contactoRepository;
+
+    @Autowired
+    private QrTokenEventoService qrTokenEventoService;
 
     @Override
     public void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora) {
@@ -406,6 +421,63 @@ public class AsistenciaServiceImpl implements AsistenciaService {
         registrarEvento(tipo, usuario, OffsetDateTime.now(ZoneOffset.UTC));
     }
 
+// CMR
+    @Override
+    public Asistencia registrarAsistenciaPorQr(Long eventoId, String token, Long contactoId) {
+        if (!qrTokenEventoService.validarToken(token, eventoId)) {
+            throw new IllegalArgumentException("Token inválido o expirado");
+        }
+
+        Evento evento = eventoRepository.findById(eventoId)
+            .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+
+        Contacto contacto = contactoRepository.findById(contactoId)
+            .orElseThrow(() -> new IllegalArgumentException("Contacto no encontrado"));
+
+        List<Asistencia> previas = asistenciaRepository.findByEventoIdAndContactoId(eventoId, contactoId);
+        if (!previas.isEmpty()) {
+            throw new IllegalStateException("Ya se registró asistencia para este evento");
+        }
+
+        Asistencia asistencia = new Asistencia();
+        asistencia.setFechaHora(OffsetDateTime.now(ZoneOffset.UTC));
+        asistencia.setTipo("CHECKIN");
+        asistencia.setEvento(evento);
+        asistencia.setContacto(contacto);
+        asistencia.setCanal("QR_DINAMICO");
+        asistencia.setTokenEscaneado(token);
+        asistencia.setEstado("NORMAL");
+        asistencia.setOrigen("web");
+
+        return asistenciaRepository.save(asistencia);
+    }
+
+    @Override
+    public Asistencia registrarAsistenciaAnonima(Long eventoId, String token) {
+        if (!qrTokenEventoService.validarToken(token, eventoId)) {
+            throw new IllegalArgumentException("Token inválido o expirado");
+        }
+
+        Evento evento = eventoRepository.findById(eventoId)
+            .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+
+        Asistencia asistencia = new Asistencia();
+        asistencia.setFechaHora(OffsetDateTime.now(ZoneOffset.UTC));
+        asistencia.setTipo("CHECKIN");
+        asistencia.setEvento(evento);
+        asistencia.setContacto(null); // anónimo
+        asistencia.setCanal("QR_DINAMICO");
+        asistencia.setTokenEscaneado(token);
+        asistencia.setEstado("NORMAL");
+        asistencia.setOrigen("web");
+
+        return asistenciaRepository.save(asistencia);
+    }
+
+    @Override
+    public boolean yaRegistrado(Long eventoId, Long contactoId) {
+        return asistenciaRepository.existsByEventoIdAndContactoId(eventoId, contactoId);
+    }
 
     
 

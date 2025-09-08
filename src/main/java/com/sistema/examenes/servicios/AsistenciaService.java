@@ -28,7 +28,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface AsistenciaService {
-    void registrarEvento(String tipo, Usuario usuario);
+   /* void registrarEvento(String tipo, Usuario usuario);
     List<Asistencia> obtenerHistorial(Usuario usuario);
     
     //admin
@@ -57,6 +57,32 @@ public interface AsistenciaService {
    
     
     void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora);
+    */
+    
+ // Registro por usuario
+    void registrarEvento(String tipo, Usuario usuario);
+    void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora);
+    boolean registrarDesdeQr(String username, String tipo);
+    boolean registrarEventoGenerico(String username, String tipoEvento);
+
+    // Registro por evento y contacto
+    Asistencia registrarAsistenciaPorQr(Long eventoId, String token, Long contactoId);
+    Asistencia registrarAsistenciaAnonima(Long eventoId, String token);
+    boolean yaRegistrado(Long eventoId, Long contactoId);
+
+    // Validación de token
+    boolean validarTokenQr(String token);
+    String registrarDesdeTokenQr(String token);
+
+    // Historial y administración
+    List<Asistencia> obtenerHistorial(Usuario usuario);
+    List<Asistencia> obtenerTodas();
+    List<Asistencia> filtrarAsistencias(String nombre, String fecha);
+    void actualizarAsistencia(Long id, AsistenciaDTO dto);
+    void eliminarAsistencia(Long id);
+
+    // Cálculo de horas
+    double calcularHorasTrabajadasPorMes(String username, YearMonth mes);
 
     
 }
