@@ -22,10 +22,9 @@ public class QrEventoController {
 
     @Autowired
     private QrTokenEventoService qrTokenEventoService;
-    
+
     @Autowired
     private JqrGenerator jqrGenerator;
-
 
     @GetMapping("/generar")
     public ResponseEntity<Map<String, String>> generarQrToken(@RequestParam Long eventoId) {
@@ -37,32 +36,40 @@ public class QrEventoController {
 
         return ResponseEntity.ok(response);
     }
-    
-    
+
     @GetMapping("/imagen")
     public ResponseEntity<Map<String, String>> generarQrImagen(@RequestParam Long eventoId) {
         try {
-            // 1. Generar token y URL
+            // 1. Validar eventoId
+            if (eventoId == null || eventoId <= 0) {
+                return ResponseEntity.badRequest().body(Map.of("error", "eventoId inválido"));
+            }
+
+            // 2. Generar token y contenido del QR
             String token = qrTokenEventoService.generarTokenParaEvento(eventoId);
             String contenidoQR = "https://asistcontrol.netlify.app/checkin?token=" + token + "&eventoId=" + eventoId;
 
-            // 2. Generar imagen QR
+            // 3. Generar imagen QR
             BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR);
+            if (qrImage == null) {
+                return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar la imagen QR"));
+            }
 
-            // 3. Convertir a base64
+            // 4. Convertir imagen a base64
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(qrImage, "png", baos);
+            baos.flush();
             String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+            baos.close();
 
-            // 4. Devolver como imagen embebida
+            // 5. Preparar respuesta
             Map<String, String> response = new HashMap<>();
             response.put("url", "data:image/png;base64," + base64);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar el QR"));
+            e.printStackTrace(); // Para depuración en consola
+            return ResponseEntity.status(500).body(Map.of("error", "Error al generar QR: " + e.getMessage()));
         }
     }
-
-    
 }
