@@ -33,7 +33,7 @@ public class QrEventoController {
 
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
-        response.put("url", "https://asistcontrol.com/checkin?token=" + token + "&eventoId=" + eventoId);
+        response.put("url", "https://asistcontrol.netlify.app/checkin?token=" + token + "&eventoId=" + eventoId);
 
         return ResponseEntity.ok(response);
     }
@@ -44,7 +44,7 @@ public class QrEventoController {
         try {
             // 1. Generar token y URL
             String token = qrTokenEventoService.generarTokenParaEvento(eventoId);
-            String contenidoQR = "https://asistcontrol.com/checkin?token=" + token + "&eventoId=" + eventoId;
+            String contenidoQR = "https://asistcontrol.netlify.app/checkin?token=" + token + "&eventoId=" + eventoId;
 
             // 2. Generar imagen QR
             BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR);
