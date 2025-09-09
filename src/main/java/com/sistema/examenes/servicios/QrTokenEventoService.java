@@ -7,4 +7,6 @@ public interface QrTokenEventoService {
     boolean validarToken(String token, Long eventoId);
     void marcarComoUsado(String token);
     void eliminarExpirados();
+    String generarTokenParaEvento(Long eventoId);
+
 }

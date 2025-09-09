@@ -9,6 +9,7 @@ import com.sistema.examenes.utilidades.JqrGenerator;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +30,12 @@ public class CheckinController {
 
     @Autowired
     private QrTokenEventoService qrTokenEventoService;
-    
+
     @Autowired
     private ContactoService contactoService;
-    
+
     @Autowired
     private JqrGenerator jqrGenerator;
-
 
     /**
      * Escaneo anónimo desde QR dinámico
@@ -77,8 +77,10 @@ public class CheckinController {
             return ResponseEntity.internalServerError().body("⚠️ Error al registrar asistencia");
         }
     }
-    
-    
+
+    /**
+     * Registro manual desde formulario
+     */
     @PostMapping("/manual")
     public ResponseEntity<String> registrarManual(@RequestBody Map<String, String> datos) {
         String nombre = datos.get("nombre");
@@ -94,24 +96,21 @@ public class CheckinController {
 
         return ResponseEntity.ok("✅ Asistencia registrada para " + nombre);
     }
-    
-    
+
+    /**
+     * Generar QR visual para escaneo
+     */
     @GetMapping("/evento/{eventoId}/qr")
     public ResponseEntity<Map<String, String>> generarQrVisual(@PathVariable Long eventoId) {
         try {
-            // 1. Generar token y URL
-            String token = qrTokenEventoService.generarTokenParaEvento(eventoId);
+            String token = qrTokenEventoService.generarToken(eventoId, Duration.ofMinutes(5));
             String contenidoQR = "https://asistcontrol.com/checkin?token=" + token + "&eventoId=" + eventoId;
 
-            // 2. Generar imagen QR
-            BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR); // ZXing o tu clase
-
-            // 3. Convertir a base64
+            BufferedImage qrImage = jqrGenerator.generarImagenQR(contenidoQR);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(qrImage, "png", baos);
             String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
 
-            // 4. Devolver como imagen embebida
             Map<String, String> response = new HashMap<>();
             response.put("url", "data:image/png;base64," + base64);
             return ResponseEntity.ok(response);
@@ -120,8 +119,4 @@ public class CheckinController {
             return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar el QR"));
         }
     }
-
-
-    
 }
-

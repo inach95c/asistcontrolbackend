@@ -58,4 +58,12 @@ public class QrTokenEventoServiceImpl implements QrTokenEventoService {
             .filter(qr -> qr.getExpiracion().isBefore(LocalDateTime.now()))
             .forEach(repository::delete);
     }
+    
+    
+    @Override
+    public String generarTokenParaEvento(Long eventoId) {
+        return generarToken(eventoId, Duration.ofMinutes(5));
+    }
+
+    
 }
