@@ -94,6 +94,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/ping").permitAll()
                 .antMatchers("/generate-token", "/usuarios/").permitAll()
+                .antMatchers("/qr-evento/**").permitAll()              // para crm eventos
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated()
             .and()
