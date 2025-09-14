@@ -6,10 +6,10 @@ services:
     plan: free
     envVars:
       - key: DB_URL
-        value: jdbc:postgresql://dpg-d2fiqh2dbo4c73baudmg-a.oregon-postgres.render.com:5432/asistenciadb_t36s
+        value: jdbc:postgresql://ep-icy-cake-adeo8hh0-pooler.c-2.us-east-1.aws.neon.tech:5432/neondb?sslmode=require&channel_binding=require
       - key: DB_USER
-        value: asistenciadb_t36s_user
+        value: neondb_owner
       - key: DB_PASSWORD
-        value: qsNBPdgvfk7pCLZ7Gp2ykuITzTystxIE
+        value: npg_SNiG4X6sFjpH
 
 
