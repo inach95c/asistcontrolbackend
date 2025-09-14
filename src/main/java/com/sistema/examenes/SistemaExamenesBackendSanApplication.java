@@ -126,12 +126,12 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		System.out.println(usuarioGuardado.getUsername()); 
 	*/	
 		////////////////////////////////////////////////////////////////////////
-     /*   Usuario usuario = new Usuario();
+       Usuario usuario = new Usuario();
 		
 		usuario.setNombre("adm");
 		usuario.setApellido("admin");
 		usuario.setUsername("adm");
-		usuario.setPassword(bCryptPasswordEncoder.encode("adm.543321.s3cret"));
+		usuario.setPassword(bCryptPasswordEncoder.encode("adm.543321"));
 		usuario.setEmail("adm@gmail.com");
 		usuario.setTelefono("59888006");
 		usuario.setPerfil("foto.pnp");
@@ -148,7 +148,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		usuarioRoles.add(usuarioRol);
 		
 		Usuario usuarioGuardado = usuarioService.guardarUsuario(usuario, usuarioRoles);
-		System.out.println(usuarioGuardado.getUsername()); */
+		System.out.println(usuarioGuardado.getUsername()); 
 		///////////////////////////////////////////////////////////////////////
 	
 		// para crear el usuario ID1 es necesario para la tolerancia no se borra no se accede
@@ -164,7 +164,7 @@ public class SistemaExamenesBackendSanApplication implements CommandLineRunner {
 		                jdbcTemplate.update(sqlUsuario,
 		                    1L,
 		                    "admin",
-		                    bCryptPasswordEncoder.encode("s3cret.543321"),
+		                    bCryptPasswordEncoder.encode("admin.543321"),
 		                    "Administrador",
 		                    "Sistema",
 		                    "admin@sistema.com",
