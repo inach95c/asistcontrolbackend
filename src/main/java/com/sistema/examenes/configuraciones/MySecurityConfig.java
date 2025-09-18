@@ -95,6 +95,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/ping").permitAll()
                 .antMatchers("/generate-token", "/usuarios/").permitAll()
                 .antMatchers("/qr-evento/**").permitAll()              // para crm eventos
+                .antMatchers("/checkin").permitAll()                   // ✅ acceso libre al escaneo
+                .antMatchers("/evento/**").permitAll()                 // ✅ si usas datos del evento sin login
+                .antMatchers("/qr").permitAll()                        // ✅ si usas /qr?eventoId=...
+                .antMatchers("/gracias-checkin").permitAll()           // ✅ pantalla de confirmación
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated()
             .and()
