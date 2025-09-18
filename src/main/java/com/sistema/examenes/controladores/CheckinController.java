@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -119,4 +120,31 @@ public class CheckinController {
             return ResponseEntity.status(500).body(Map.of("error", "No se pudo generar el QR"));
         }
     }
+    
+    @PostMapping("/registro-rapido")
+    public ResponseEntity<String> registrarRapido(@RequestBody Map<String, Object> datos) {
+        try {
+            String nombre = (String) datos.get("nombre");
+            String correo = (String) datos.get("correo");
+            String telefono = (String) datos.get("telefono");
+            String ciudad = (String) datos.get("ciudad");
+            Integer edad = datos.get("edad") != null ? (Integer) datos.get("edad") : null;
+            String sexo = (String) datos.get("sexo");
+            List<String> preferencias = (List<String>) datos.get("preferencias");
+            Long eventoId = Long.valueOf(datos.get("eventoId").toString());
+
+            if (nombre == null || nombre.trim().isEmpty() || telefono == null || correo == null || ciudad == null || edad == null || sexo == null) {
+                return ResponseEntity.badRequest().body("Faltan datos obligatorios");
+            }
+
+            Contacto contacto = contactoService.crearDesdeRegistroRapido(nombre, correo, telefono, ciudad, edad, sexo, preferencias);
+            asistenciaService.registrarAsistenciaPorQr(eventoId, "QR_REGISTRO", contacto.getId());
+
+            return ResponseEntity.ok("✅ Registro y asistencia completados para " + nombre);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("⚠️ Error en el registro rápido");
+        }
+    }
+
+    
 }

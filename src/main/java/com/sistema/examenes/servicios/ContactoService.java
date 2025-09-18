@@ -17,5 +17,8 @@ public interface ContactoService {
     
     //para qr crm
     Contacto crearSiNoExiste(String nombre, String correo);
+    
+    Contacto crearDesdeRegistroRapido(String nombre, String correo, String telefono, String ciudad, Integer edad, String sexo, List<String> preferencias);
+
 
 }

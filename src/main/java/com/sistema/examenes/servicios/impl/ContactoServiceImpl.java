@@ -1,6 +1,7 @@
 package com.sistema.examenes.servicios.impl;
 
 import com.sistema.examenes.entidades.Contacto;
+import com.sistema.examenes.entidades.Etiqueta;
 import com.sistema.examenes.repositorios.ContactoRepository;
 import com.sistema.examenes.servicios.ContactoService;
 
@@ -88,6 +89,26 @@ public class ContactoServiceImpl implements ContactoService {
 
         return contactoRepository.save(nuevo);
     }
+    
+    
+    @Override
+    public Contacto crearDesdeRegistroRapido(String nombre, String correo, String telefono, String ciudad, Integer edad, String sexo, List<String> preferencias) {
+        Contacto contacto = new Contacto();
+        contacto.setNombre(nombre);
+        contacto.setCorreo(correo);
+        contacto.setTelefono(telefono);
+        contacto.setCiudad(ciudad);
+        contacto.setEdad(edad);
+        contacto.setSexo(sexo);
+        contacto.setPreferencias(preferencias);
+        contacto.setActivo(true);
+        contacto.setFechaRegistro(LocalDateTime.now());
+        contacto.setUltimaInteraccion(LocalDateTime.now());
+        contacto.setEtiqueta(Etiqueta.INVITADO); // o el valor por defecto que prefieras
+
+        return contactoRepository.save(contacto);
+    }
+
 
     
 }
