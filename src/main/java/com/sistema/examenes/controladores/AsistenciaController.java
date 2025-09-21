@@ -110,6 +110,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,7 +297,7 @@ public class AsistenciaController {
     
     
  // PARA GENERAR TOKEN, EL USUARIO SOLO SCANERARÁ SIN NECESIDAD DE AUTENTICARSE SOLUCION (2)
-    @PostMapping("/registrar-por-jwt")
+   /* @PostMapping("/registrar-por-jwt")
     public ResponseEntity<String> registrarPorJwt(@RequestBody Map<String, String> payload) {
         try {
             String token = payload.get("token");
@@ -319,7 +320,45 @@ public class AsistenciaController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Token inválido o error en el formato de fecha.");
         }
+    }*/
+    
+    
+    @PostMapping("/registrar-por-jwt")
+    public ResponseEntity<String> registrarPorJwt(@RequestBody Map<String, String> payload) {
+        try {
+            String token = payload.get("token");
+            String fechaHoraStr = payload.get("fechaHora");
+
+            Claims claims = Jwts.parser()
+                .setSigningKey("super-clave-secreta-para-qr")
+                .parseClaimsJws(token)
+                .getBody();
+
+            String username = claims.getSubject();
+            String tipoEvento = claims.get("tipoEvento", String.class);
+
+            Usuario usuario = usuarioService.obtenerUsuario(username);
+            if (usuario == null) {
+                return ResponseEntity.badRequest().body("Usuario no encontrado para el token.");
+            }
+
+            OffsetDateTime fechaHora;
+            try {
+                fechaHora = (fechaHoraStr != null && !fechaHoraStr.isBlank())
+                    ? OffsetDateTime.parse(fechaHoraStr)
+                    : OffsetDateTime.now(ZoneOffset.UTC); // 🛡️ fallback si no viene fecha
+            } catch (Exception ex) {
+                return ResponseEntity.badRequest().body("Formato de fecha inválido.");
+            }
+
+            asistenciaService.registrarEvento(tipoEvento, usuario, fechaHora);
+
+            return ResponseEntity.ok("Registro automático exitoso: " + tipoEvento + " para " + username);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Token inválido o error al registrar asistencia.");
+        }
     }
+
 
 
     

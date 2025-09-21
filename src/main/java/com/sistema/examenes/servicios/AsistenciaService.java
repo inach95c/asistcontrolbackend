@@ -28,36 +28,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface AsistenciaService {
-   /* void registrarEvento(String tipo, Usuario usuario);
-    List<Asistencia> obtenerHistorial(Usuario usuario);
-    
-    //admin
-    // Nuevos métodos para el administrador
-    List<Asistencia> obtenerTodas();
-    List<Asistencia> filtrarAsistencias(String nombre, String fecha); // Ambos parámetros opcionales
-    
-    void actualizarAsistencia(Long id, AsistenciaDTO dto);
-    
-    void eliminarAsistencia(Long id);
-    
- // Para escaneo desde QR
-    boolean registrarDesdeQr(String username, String tipo);
-    
-    //para vacaciones u otros
-    
-    boolean registrarEventoGenerico(String username, String tipoEvento);
-
-    
-    boolean validarTokenQr(String token);
-    
-    String registrarDesdeTokenQr(String token);
-
-
-    double calcularHorasTrabajadasPorMes(String username, YearMonth mes);
-   
-    
-    void registrarEvento(String tipo, Usuario usuario, OffsetDateTime fechaHora);
-    */
+  
     
  // Registro por usuario
     void registrarEvento(String tipo, Usuario usuario);
