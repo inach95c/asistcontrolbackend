@@ -318,7 +318,7 @@ public class HorarioServiceImpl implements HorarioService {
             inicioMes.atStartOfDay(), finMes.atTime(LocalTime.MAX)
         );*/
         
-        //codigo agregado ahora
+        //codigo agregado ahora para tabla resumen
         //------------------------
         OffsetDateTime inicio = yearMonth.atDay(1).atStartOfDay().atOffset(ZoneOffset.UTC);
         OffsetDateTime fin = yearMonth.atEndOfMonth().atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC);
