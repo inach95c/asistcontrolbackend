@@ -246,7 +246,7 @@ public class HorarioController {
         }
     }*/
     
-    
+    // esta modificacion es para resolver el resumen mensual
     @GetMapping("/horas-trabajadas")
     public ResponseEntity<List<HorasTrabajadasDTO>> obtenerHorasTrabajadasPorMes(@RequestParam("mes") String mes) {
         try {
