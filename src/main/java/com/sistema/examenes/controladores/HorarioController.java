@@ -3,9 +3,11 @@ package com.sistema.examenes.controladores;
 import com.sistema.examenes.configuraciones.JwtUtils;
 import com.sistema.examenes.dto.HorasTrabajadasDTO;
 import com.sistema.examenes.dto.ToleranciaDTO;
+import com.sistema.examenes.entidades.Asistencia;
 import com.sistema.examenes.entidades.Horario;
 import com.sistema.examenes.entidades.HorarioMasivoRequest;
 import com.sistema.examenes.entidades.Usuario;
+import com.sistema.examenes.servicios.AsistenciaService;
 import com.sistema.examenes.servicios.HorarioService;
 import com.sistema.examenes.servicios.UsuarioService;
 
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 //@CrossOrigin(origins = "http://localhost:4200")
 
 public class HorarioController {
+	
+	 @Autowired
+	    private AsistenciaService asistenciaService;
 
     @Autowired
     private HorarioService horarioService;
@@ -228,7 +234,7 @@ public class HorarioController {
     }
 
 
-    @GetMapping("/horas-trabajadas")
+   /* @GetMapping("/horas-trabajadas")
     public ResponseEntity<List<HorasTrabajadasDTO>> obtenerHorasTrabajadasPorMes(
             @RequestParam("mes") String mes) {
         try {
@@ -238,9 +244,30 @@ public class HorarioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
+    }*/
+    
+    
+    @GetMapping("/horas-trabajadas")
+    public ResponseEntity<List<HorasTrabajadasDTO>> obtenerHorasTrabajadasPorMes(@RequestParam("mes") String mes) {
+        try {
+            List<HorasTrabajadasDTO> resumen = horarioService.calcularHorasTrabajadasPorMes(mes);
+
+            if (resumen == null || resumen.isEmpty()) {
+                System.out.println("⚠️ No se encontraron registros de asistencia para el mes: " + mes);
+            } else {
+                System.out.println("📦 Registros procesados: " + resumen.size());
+            }
+
+            return ResponseEntity.ok(resumen);
+
+        } catch (Exception e) {
+            System.out.println("❌ Error al calcular horas trabajadas para el mes " + mes + ": " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(new ArrayList<>()); // ← devuelve lista vacía en caso de error
+        }
     }
-
-
+  
+    
     
     @GetMapping("/horas-normales")
     public ResponseEntity<?> obtenerHorasNormalesPorDia() {
