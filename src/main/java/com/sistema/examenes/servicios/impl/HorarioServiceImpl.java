@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -313,9 +314,17 @@ public class HorarioServiceImpl implements HorarioService {
         LocalDate inicioMes = yearMonth.atDay(1);
         LocalDate finMes = yearMonth.atEndOfMonth();
 
-        List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(
+       /* List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(
             inicioMes.atStartOfDay(), finMes.atTime(LocalTime.MAX)
-        );
+        );*/
+        
+        //codigo agregado ahora
+        //------------------------
+        OffsetDateTime inicio = yearMonth.atDay(1).atStartOfDay().atOffset(ZoneOffset.UTC);
+        OffsetDateTime fin = yearMonth.atEndOfMonth().atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC);
+        List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(inicio, fin);
+        //-----------------------
+
 
         Map<Usuario, List<Asistencia>> agrupadas = asistencias.stream()
             .collect(Collectors.groupingBy(Asistencia::getUsuario));

@@ -52,8 +52,9 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
     	List<Asistencia> buscarPorRango(@Param("inicio") OffsetDateTime inicio, @Param("fin") OffsetDateTime fin);
 
     
-    List<Asistencia> findByFechaHoraBetween(LocalDateTime localDateTime, LocalDateTime localDateTime2);
-    
+   // ahora  List<Asistencia> findByFechaHoraBetween(LocalDateTime localDateTime, LocalDateTime localDateTime2);
+    List<Asistencia> findByFechaHoraBetween(OffsetDateTime inicio, OffsetDateTime fin);
+
     //Esto te permite validar si un contacto ya escaneó para ese evento.
     List<Asistencia> findByEventoIdAndContactoId(Long eventoId, Long contactoId);
 
