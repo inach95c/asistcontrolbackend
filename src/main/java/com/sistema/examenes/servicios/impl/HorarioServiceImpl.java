@@ -322,7 +322,8 @@ public class HorarioServiceImpl implements HorarioService {
         //------------------------
         OffsetDateTime inicio = yearMonth.atDay(1).atStartOfDay().atOffset(ZoneOffset.UTC);
         OffsetDateTime fin = yearMonth.atEndOfMonth().atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC);
-        List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(inicio, fin);
+        List<Asistencia> asistencias = asistenciaRepository.buscarPorRango(inicio, fin);
+
         //-----------------------
 
 
