@@ -307,16 +307,19 @@ public class HorarioServiceImpl implements HorarioService {
 
         return resultado;
     }*/
-
+    
+    
+    
+/*  // me funciona en admin con retrasos no asi en el panel usuarios  
     @Override
     public List<HorasTrabajadasDTO> calcularHorasTrabajadasPorMes(String mes) {
         YearMonth yearMonth = YearMonth.parse(mes);
         LocalDate inicioMes = yearMonth.atDay(1);
         LocalDate finMes = yearMonth.atEndOfMonth();
 
-       /* List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(
-            inicioMes.atStartOfDay(), finMes.atTime(LocalTime.MAX)
-        );*/
+       // List<Asistencia> asistencias = asistenciaRepository.findByFechaHoraBetween(
+       //     inicioMes.atStartOfDay(), finMes.atTime(LocalTime.MAX)
+       //  );
         
         //codigo agregado ahora para tabla resumen
         //------------------------
@@ -384,6 +387,92 @@ public class HorarioServiceImpl implements HorarioService {
                 Math.round(horasNormales * 100.0) / 100.0,
                 Math.round(horasExtras * 100.0) / 100.0
             ));
+        }
+
+        return resultado;
+    }*/
+
+    
+    @Override
+    public List<HorasTrabajadasDTO> calcularHorasTrabajadasPorMes(String mes) {
+        List<HorasTrabajadasDTO> resultado = new ArrayList<>();
+
+        try {
+            YearMonth yearMonth = YearMonth.parse(mes); // ✅ formato yyyy-MM
+            LocalDate inicioMes = yearMonth.atDay(1);
+            LocalDate finMes = yearMonth.atEndOfMonth();
+
+            List<Horario> horarios = horarioRepository.findByFechaInicioBetween(inicioMes, finMes);
+            if (horarios == null || horarios.isEmpty()) {
+                System.out.println("⚠️ No se encontraron horarios entre " + inicioMes + " y " + finMes);
+                return resultado;
+            }
+
+            Map<Usuario, List<Horario>> agrupados = horarios.stream()
+                .filter(h -> h.getUsuario() != null && h.getFechaInicio() != null)
+                .collect(Collectors.groupingBy(Horario::getUsuario));
+
+            Double horasPorDia = obtenerHorasNormalesPorDia();
+
+            for (Map.Entry<Usuario, List<Horario>> entry : agrupados.entrySet()) {
+                Usuario usuario = entry.getKey();
+                List<Horario> lista = entry.getValue();
+
+                Map<LocalDate, List<Horario>> porDia = lista.stream()
+                    .filter(h -> h.getFechaInicio() != null)
+                    .collect(Collectors.groupingBy(Horario::getFechaInicio));
+
+                double horasNormales = 0;
+                double horasExtras = 0;
+
+                for (Map.Entry<LocalDate, List<Horario>> dia : porDia.entrySet()) {
+                    double totalDia = 0;
+
+                    for (Horario h : dia.getValue()) {
+                        LocalTime entradaTime = h.getHoraEntrada();
+                        LocalTime salidaTime = h.getHoraSalida();
+                        LocalDate fecha = h.getFechaInicio();
+
+                        if (entradaTime != null && salidaTime != null) {
+                            LocalDateTime entrada = LocalDateTime.of(fecha, entradaTime);
+                            LocalDateTime salida = LocalDateTime.of(fecha, salidaTime);
+
+                            if (salida.isAfter(entrada)) {
+                                double horas = Duration.between(entrada, salida).toMinutes() / 60.0;
+                                totalDia += horas;
+
+                                System.out.println("👤 " + usuario.getNombre() +
+                                    " | Día: " + fecha +
+                                    " | Entrada: " + entradaTime +
+                                    " | Salida: " + salidaTime +
+                                    " | Horas: " + horas);
+                            } else {
+                                System.out.println("⚠️ Salida antes de entrada para usuario " + usuario.getNombre() + " en " + fecha);
+                            }
+                        } else {
+                            System.out.println("⚠️ Entrada o salida nula para usuario " + usuario.getNombre() + " en " + fecha);
+                        }
+                    }
+
+                    if (totalDia <= horasPorDia) {
+                        horasNormales += totalDia;
+                    } else {
+                        horasNormales += horasPorDia;
+                        horasExtras += totalDia - horasPorDia;
+                    }
+                }
+
+                resultado.add(new HorasTrabajadasDTO(
+                    usuario.getId(),
+                    usuario.getNombre(),
+                    Math.round(horasNormales * 100.0) / 100.0,
+                    Math.round(horasExtras * 100.0) / 100.0
+                ));
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Error en calcularHorasTrabajadasPorMes: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return resultado;
